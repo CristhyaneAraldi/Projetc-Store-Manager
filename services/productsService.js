@@ -1,7 +1,7 @@
 const productsModel = require('../models/productsModel');
 const productsSchema = require('../schemas/productsSchema');
 const errorConstructor = require('../utils/errorConstructor');
-const { HTTP_CONFLICT } = require('../utils/statusCodes');
+const { HTTP_CONFLICT, HTTP_NOT_FOUND } = require('../utils/statusCodes');
 
 const readProducts = async () => {
   const products = await productsModel.readProducts();
@@ -37,7 +37,18 @@ const create = async ({ name, quantity }) => {
   };
 };
 
+const getById = async (id) => {
+  const product = await productsModel.getById(id);
+
+  if (!product) {
+    return { status: HTTP_NOT_FOUND, message: 'Product not found' };
+  }
+
+  return product;
+};
+
 module.exports = {
   readProducts,
   create,
+  getById,
 };

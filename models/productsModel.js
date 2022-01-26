@@ -8,7 +8,10 @@ const readProducts = async () => {
 
 const getByName = async (name) => {
   const query = 'SELECT name FROM products WHERE name = ?';
-  const [[rows]] = await connection.execute(query, [name]);
+  const [[rows]] = await connection.execute(
+    query, 
+    [name],
+  );
   console.log(rows);
   return rows;
 };
@@ -27,8 +30,18 @@ const create = async ({ name, quantity }) => {
   };
 };
 
+const getById = async (id) => {
+  const query = 'SELECT * FROM products WHERE id = ?';
+  const [[rows]] = await connection.execute(
+    query,
+    [id],
+  );
+  return rows;
+};
+
 module.exports = {
   readProducts,
   getByName,
   create,
+  getById,
 };

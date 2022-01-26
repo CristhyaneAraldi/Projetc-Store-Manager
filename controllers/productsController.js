@@ -11,8 +11,9 @@ const readProducts = async (_req, res, next) => {
 };
 
 const create = async (req, res, next) => {
+  const { name, quantity } = req.body;
+  
   try {
-    const { name, quantity } = req.body;
     const products = await productsService.create({ name, quantity });
     
       if (products.status) {
@@ -25,7 +26,24 @@ const create = async (req, res, next) => {
   }
 };
 
+const getById = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const product = await productsService.getById(id);
+
+    if (product.status) {
+      return res.status(product.status).json({ message: product.message });
+    }
+
+    return res.status(HTTP_OK).json(product);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   readProducts,
   create,
+  getById,
 };
