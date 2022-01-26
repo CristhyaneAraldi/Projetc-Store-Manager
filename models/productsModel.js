@@ -1,5 +1,18 @@
 const connection = require('./connection');
 
+const readProducts = async () => {
+  const query = 'SELECT * FROM products';
+  const [rows] = await connection.execute(query);
+  return rows;
+};
+
+const getByName = async (name) => {
+  const query = 'SELECT name FROM products WHERE name = ?';
+  const [[rows]] = await connection.execute(query, [name]);
+  console.log(rows);
+  return rows;
+};
+
 const create = async ({ name, quantity }) => {
   const query = 'INSERT INTO products (name, quantity) VALUES (?, ?)';
   const [rows] = await connection.execute(
@@ -15,5 +28,7 @@ const create = async ({ name, quantity }) => {
 };
 
 module.exports = {
+  readProducts,
+  getByName,
   create,
 };

@@ -1,16 +1,31 @@
 const productsService = require('../services/productsService');
+const { HTTP_OK, HTTP_CREATED } = require('../utils/statusCodes');
 
-const HTTP_CREATED = 201;
+const readProducts = async (_req, res, next) => {
+  try {
+    const products = await productsService.readProducts();
+    return res.status(HTTP_OK).json(products);
+  } catch (error) {
+    next(error);
+  }
+};
 
-const create = async (req, res) => {
-  const { name, quantity } = req.body;
-
-  const products = await productsService
-    .create({ name, quantity });
-
-  res.status(HTTP_CREATED).json(products);
+const create = async (req, res, next) => {
+  try {
+    const { name, quantity } = req.body;
+    const products = await productsService.create({ name, quantity });
+    
+      if (products.status) {
+        return res.status(products.status).json({ message: products.message });
+      }
+    
+    return res.status(HTTP_CREATED).json(products);
+  } catch (error) {
+    next(error);
+  }
 };
 
 module.exports = {
+  readProducts,
   create,
 };

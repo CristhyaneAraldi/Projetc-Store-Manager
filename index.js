@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const productsRouter = require('./routers/productsRouter');
-const errorMiddleware = require('./middlewares/error');
+const errorMiddleware = require('./middlewares/errorMiddleware');
 
 const app = express();
 app.use(bodyParser.json());
