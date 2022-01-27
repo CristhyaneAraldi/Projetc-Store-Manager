@@ -12,7 +12,7 @@ const getByName = async (name) => {
     query, 
     [name],
   );
-  console.log(rows);
+
   return rows;
 };
 
@@ -39,9 +39,20 @@ const getById = async (id) => {
   return rows;
 };
 
+const update = async ({ id, name, quantity }) => {
+  const query = 'UPDATE products SET name = ?, quantity = ? WHERE id = ?';
+  const [rows] = await connection.execute(
+    query,
+    [name, quantity, id],
+  );
+
+  return rows.changedRows;
+};
+
 module.exports = {
   readProducts,
   getByName,
   create,
   getById,
+  update,
 };

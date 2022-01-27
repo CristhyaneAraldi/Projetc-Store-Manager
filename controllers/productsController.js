@@ -15,8 +15,8 @@ const create = async (req, res, next) => {
   
   try {
     const products = await productsService.create({ name, quantity });
-    
-      if (products.status) {
+
+      if (products.status && products.message) {
         return res.status(products.status).json({ message: products.message });
       }
     
@@ -32,7 +32,24 @@ const getById = async (req, res, next) => {
   try {
     const product = await productsService.getById(id);
 
-    if (product.status) {
+    if (product.status && product.message) {
+      return res.status(product.status).json({ message: product.message });
+    }
+
+    return res.status(HTTP_OK).json(product);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const update = async (req, res, next) => {
+  const { id } = req.params;
+  const { name, quantity } = req.body;
+
+  try {
+    const product = await productsService.update({ id, name, quantity });
+
+    if (product.status && product.message) {
       return res.status(product.status).json({ message: product.message });
     }
 
@@ -46,4 +63,5 @@ module.exports = {
   readProducts,
   create,
   getById,
+  update,
 };

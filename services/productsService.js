@@ -1,7 +1,12 @@
 const productsModel = require('../models/productsModel');
 const productsSchema = require('../schemas/productsSchema');
 const errorConstructor = require('../utils/errorConstructor');
-const { HTTP_CONFLICT, HTTP_NOT_FOUND } = require('../utils/statusCodes');
+const { 
+  HTTP_CONFLICT,
+  HTTP_NOT_FOUND,
+  HTTP_UNPROCESSABLE_ENTITY,
+  HTTP_BAD_REQUEST,
+} = require('../utils/statusCodes');
 
 const readProducts = async () => {
   const products = await productsModel.readProducts();
@@ -11,10 +16,10 @@ const readProducts = async () => {
 const validadeProducts = ({ name, quantity }) => {
   const { error } = productsSchema.validate({ name, quantity });
 
-  let errorStatus = 422;
+  let errorStatus = HTTP_UNPROCESSABLE_ENTITY;
   if (error 
     && (error.message === '"quantity" is required' || error.message === '"name" is required')) {
-    errorStatus = 400;
+    errorStatus = HTTP_BAD_REQUEST;
   }
 
   if (error) throw errorConstructor(errorStatus, error.message);
@@ -44,11 +49,30 @@ const getById = async (id) => {
     return { status: HTTP_NOT_FOUND, message: 'Product not found' };
   }
 
-  return product;
+  return {
+    ...product,
+  };
+};
+
+const update = async ({ id, name, quantity }) => {
+  validadeProducts({ name, quantity });
+
+  const product = await productsModel.update({ id, name, quantity });
+
+  if (!product) {
+    return { status: HTTP_NOT_FOUND, message: 'Product not found' };
+  }
+
+  return {
+    id,
+    name,
+    quantity,
+  };
 };
 
 module.exports = {
   readProducts,
   create,
   getById,
+  update,
 };
