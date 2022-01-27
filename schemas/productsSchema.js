@@ -15,5 +15,5 @@ const productsSchema = Joi.object({
 });
 module.exports = productsSchema;
 
-// Source of Joi usage: content discussed with Mayu Satori, Renata Nunes 
-// and Tiago Mariotto (https://drive.google.com/file/d/1svtR0cA3Od2X14KgJ-dnRxWF5R_rZJXY/view)
+// Source 1: content about Joi usage discussed with Mayu Satori and Renata Nunes 
+// Source 2: video Tiago Mariotto: (https://drive.google.com/file/d/1svtR0cA3Od2X14KgJ-dnRxWF5R_rZJXY/view)

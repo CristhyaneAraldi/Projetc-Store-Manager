@@ -70,9 +70,22 @@ const update = async ({ id, name, quantity }) => {
   };
 };
 
+const remove = async (id) => {
+  const existingProduct = await productsModel.getById(id);
+
+  const product = await productsModel.remove(id);
+
+  if (!product) {
+    return { status: HTTP_NOT_FOUND, message: 'Product not found' };
+  }
+
+  return existingProduct;
+};
+
 module.exports = {
   readProducts,
   create,
   getById,
   update,
+  remove,
 };
