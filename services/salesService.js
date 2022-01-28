@@ -1,7 +1,11 @@
 const salesModel = require('../models/salesModel');
 const salesSchema = require('../schemas/salesSchema');
 const errorConstructor = require('../utils/errorConstructor');
-const { HTTP_UNPROCESSABLE_ENTITY, HTTP_BAD_REQUEST } = require('../utils/statusCodes');
+const { 
+  HTTP_UNPROCESSABLE_ENTITY, 
+  HTTP_BAD_REQUEST, 
+  HTTP_NOT_FOUND,
+} = require('../utils/statusCodes');
 
 const serialize = (newSale) => newSale.map((sale) => ({
   productId: sale.product_id,
@@ -20,12 +24,12 @@ const validateSales = ({ productId, quantity }) => {
 };
 
 const create = async (newSale) => {
-  serialize(newSale).map(({ productId, quantity }) => validateSales({ productId, quantity }));
+  serialize(newSale).forEach(({ productId, quantity }) => validateSales({ productId, quantity }));
 
   const saleId = await salesModel.createSale();
 
   await Promise.all(newSale.map(async ({ product_id, quantity }) => {
-    const createSale = await salesModel.createSalesProducts(saleId.id, product_id, quantity);
+    const createSale = await salesModel.createSalesProducts(saleId, product_id, quantity);
     return createSale;
   }));
 
@@ -35,6 +39,40 @@ const create = async (newSale) => {
   };
 };
 
+const getAll = async () => {
+  const sales = await salesModel.getAll();
+  return sales;
+};
+
+const getById = async (id) => {
+  const sale = await salesModel.getById(id);
+
+  if (sale.length === 0) {
+    return { status: HTTP_NOT_FOUND, message: 'Sale not found' };
+  }
+
+  return sale;
+};
+
+const update = async (updatedSale, id) => {
+  serialize(updatedSale).forEach(({ productId, quantity }) => (
+    validateSales({ productId, quantity })
+  ));
+
+  await Promise.all(updatedSale.map(async ({ product_id, quantity }) => {
+    const sale = await salesModel.update(id, product_id, quantity);
+    return sale;
+  }));
+
+  return {
+    saleId: id,
+    itemUpdated: updatedSale,
+  };
+};
+
 module.exports = {
   create,
+  getAll,
+  getById,
+  update,
 };
