@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const connection = require('../../models/connection');
 const productsModel = require('../../models/productsModel');
+const salesModel = require('../../models/salesModel');
 
 describe('Req 1(model): Cria um endpoint para o cadastro de produtos', () => {
   const payloadProduct = {
@@ -159,6 +160,34 @@ describe('Req 4(model): Cria um endpoint para deletar um produto', () => {
     it('Retorna a chave affectedRows com valor 1', async () => {
       const response = await productsModel.remove(payloadId);
       expect(response).to.be.eq(affectedRows);
+    });
+  });
+});
+
+describe('Req 5(model): Cria um endpoint para cadastrar vendas', () => {
+  const payloadSales = [{
+    product_id: 'product_id',
+    quantity: 'product_quantity',
+  }];
+
+  before(async () => {
+    const execute = [{ saleId: 1, productId: 'product_name', quantity: 10 }];
+    sinon.stub(connection, 'execute').resolves(execute);
+  });
+
+  after(async () => {
+    connection.execute.restore();
+  });
+
+  describe('Quando a venda é cadastrada com sucesso', () => {
+    it('Retorna um objeto', async () => {
+      const response = await salesModel.createSalesProducts(payloadSales);
+      expect(response).to.be.an('object');
+    });
+
+    it('O atributo "quantity" está presente no body da requisição', async () => {
+      const response = await salesModel.createSalesProducts(payloadSales);
+      expect(response).to.have.a.property('quantity');
     });
   });
 });

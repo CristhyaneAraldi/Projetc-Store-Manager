@@ -1,8 +1,9 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
-// const connection = require('../../models/connection');
 const productsModel = require('../../models/productsModel');
 const productsService = require('../../services/productsService');
+const salesModel = require('../../models/salesModel');
+const salesService = require('../../services/salesService');
 
 describe('Req 1(serv): Cria um endpoint para o cadastro de produtos', () => {
   const payloadProduct = {
@@ -141,6 +142,31 @@ describe('Req 4(serv): Cria um endpoint para deletar um produto', () => {
     it('O objeto contém a chave id', async () => {
       const response = await productsService.remove(payloadId);
       expect(response).to.have.key('id');
+    });
+  });
+});
+
+describe('Req 5(serv): Cria um endpoint para cadastrar vendas', () => {
+  const payloadSales = [{
+    product_id: 1,
+    quantity: 10,
+  }];
+
+  describe('Quando a venda é inserida com sucesso', () => {
+    before(async () => {
+      const execute = [{ saleId: 1, productId: 'product_name', quantity: 10 }];
+      sinon.stub(salesModel, 'createSale').resolves(1);
+      sinon.stub(salesModel, 'createSalesProducts').resolves(execute);
+    });
+  
+    after(async () => {
+      salesModel.createSale.restore();
+      salesModel.createSalesProducts.restore();
+    });
+    
+    it('Retorna um objeto', async () => {
+      const response = await salesService.create(payloadSales);
+      expect(response).to.be.an('object');
     });
   });
 });

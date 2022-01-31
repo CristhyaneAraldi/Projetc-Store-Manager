@@ -2,6 +2,8 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const productsService = require('../../services/productsService');
 const productsController = require('../../controllers/productsController');
+const salesService = require('../../services/salesService');
+const salesController = require('../../controllers/salesController');
 
 describe('Req 1(contr): Cria um endpoint para o cadastro de produtos', () => {
   const payloadProduct = {
@@ -142,6 +144,38 @@ describe('Req 4(contr): Cria um endpoint para deletar um produto', () => {
       await productsController.remove(req, res);
 
       expect(res.status.calledWith(200)).to.be.equal(true);
+    });
+  });
+});
+
+describe('Req 5(contr): Cria um endpoint para cadastrar vendas', () => {
+  const payloadSales = [{
+    product_id: 1,
+    quantity: 10,
+  }];
+
+  describe('Quando a venda é inserida com sucesso', () => {
+    const req = {};
+    const res = {};
+
+    before(() => {
+      req.body = payloadSales;
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+      
+      const execute = { saleId: 1, productId: 'product_name', quantity: 10 };
+      sinon.stub(salesService, 'create').resolves(execute);
+    });
+
+    after(() => {
+      salesService.create.restore();
+    });
+    
+    it('É chamado o status com o código 201', async () => {
+      await salesController.create(req, res);
+
+      expect(res.status.calledWith(201)).to.be.equal(true);
     });
   });
 });
