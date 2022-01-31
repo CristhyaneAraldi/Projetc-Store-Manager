@@ -192,3 +192,103 @@ describe('Req 5(model): Cria um endpoint para cadastrar vendas', () => {
   });
 });
 
+describe('Req 6(model): Cria um endpoint para listar as vendas', () => {
+
+  describe('Quando a lista de vendas é gerada com sucesso', () => {
+    before(async () => {
+      const execute = [[
+        {
+          saleId: 1,
+          date: '2021-09-09T04:54:29.000Z',
+          product_id: 1,
+          quantity: 2
+        },
+        {
+          saleId: 1,
+          date: '2021-09-09T04:54:54.000Z',
+          product_id: 2,
+          quantity: 2
+        }
+      ]];
+
+      sinon.stub(connection, 'execute').resolves(execute);
+    });
+  
+    after(async () => {
+      connection.execute.restore();
+    });
+
+    it('Retorna um array', async () => {
+      const response = await salesModel.getAll();
+      expect(response).to.be.an('array');
+    });
+
+    it('O array possui objetos com as chaves saleId, date, product_id e quantity', async () => {
+      const [response] = await salesModel.getAll();
+      expect(response).to.include.all.keys('saleId', 'date', 'product_id', 'quantity');
+    });
+
+  });
+
+  describe('Quando uma venda é listada pelo id', () => {
+    const payloadId = 1;
+
+    before(async () => {
+      const execute = [{
+        saleId: 1,
+        date: '2021-09-09T04:54:54.000Z',
+        product_id: 2,
+        quantity: 2
+      }];
+
+      sinon.stub(connection, 'execute').resolves(execute);
+    });
+
+    after(async () => {
+      connection.execute.restore();
+    });
+
+    it('Retorna um objeto', async () => {
+      const response = await salesModel.getById(payloadId);
+      expect(response).to.be.an('object');
+    });
+
+    it('O objeto possui as chaves saleId, date, product_id e quantity', async () => {
+      const response = await salesModel.getById(payloadId);
+      expect(response).to.include.all.keys('saleId', 'date', 'product_id', 'quantity');
+    });
+  });
+});
+
+describe('Req 7(model): Cria um endpoint para atualizar uma venda', () => {
+  describe('Quando a venda é atualizada com sucesso', () => {
+    const payloadSale = {
+      id: 2,
+      productId: 2,
+      quantity: 5
+    }
+
+    const changedRows = 1;
+
+    before(async () => {
+      const execute = [{
+      fieldCount: 0,
+      affectedRows: 1,
+      insertId: 0,
+      info: '',
+      changedRows: 1
+      }];
+
+      sinon.stub(connection, 'execute').resolves(execute);
+    });
+  
+    after(async () => {
+      connection.execute.restore();
+    });
+
+    it('Retorna a chave changedRows com valor 1', async () => {
+      const response = await salesModel.update(payloadSale);
+      expect(response).to.be.eq(changedRows);
+    });
+  });
+});

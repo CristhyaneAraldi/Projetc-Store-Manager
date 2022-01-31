@@ -179,3 +179,93 @@ describe('Req 5(contr): Cria um endpoint para cadastrar vendas', () => {
     });
   });
 });
+
+describe('Req 6(contr): Cria um endpoint para listar as vendas', () => {
+  const payloadSales = [
+    {
+      saleId: 1,
+      date: '2021-09-09T04:54:29.000Z',
+      product_id: 1,
+      quantity: 2
+    },
+    {
+      saleId: 2,
+      date: '2021-09-09T04:54:54.000Z',
+      product_id: 2,
+      quantity: 2
+    }
+  ];
+
+  describe('Quando a lista de vendas é gerada com sucesso', () => {
+    const req = {};
+    const res = {};
+
+    before(() => {
+      req.body = payloadSales;
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+      
+      const execute = [
+        {
+          saleId: 1,
+          date: '2021-09-09T04:54:29.000Z',
+          product_id: 1,
+          quantity: 2
+        },
+        {
+          saleId: 2,
+          date: '2021-09-09T04:54:54.000Z',
+          product_id: 2,
+          quantity: 2
+        }
+      ];
+
+      sinon.stub(salesService, 'getAll').resolves(execute);
+    });
+
+    after(() => {
+      salesService.getAll.restore();
+    });
+    
+    it('É chamado o status com o código 200', async () => {
+      await salesController.getAll(req, res);
+
+      expect(res.status.calledWith(200)).to.be.equal(true);
+    });
+  });
+});
+
+describe('Req 7(contr): Cria um endpoint para atualizar uma venda', () => {
+  const payloadSale = {
+    id: 2,
+    productId: 3,
+    quantity: 5
+  };
+
+  describe('Quando a venda é atualizada com sucesso', () => {
+    const req = {};
+    const res = {};
+
+    before(() => {
+      req.body = payloadSale;
+      req.params = 3;
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+      
+      const execute = { id: 2, productId: 2, quantity: 10 };
+      sinon.stub(salesService, 'update').resolves(execute);
+    });
+
+    after(() => {
+      salesService.update.restore();
+    });
+    
+    it('É chamado o status com o código 200', async () => {
+      await salesController.update(req, res);
+
+      expect(res.status.calledWith(200)).to.be.equal(true);
+    });
+  });
+});

@@ -170,3 +170,41 @@ describe('Req 5(serv): Cria um endpoint para cadastrar vendas', () => {
     });
   });
 });
+
+describe('Req 6(serv): Cria um endpoint para listar as vendas', () => {
+
+  describe('Quando a lista de vendas é gerada com sucesso', () => {
+    before(async () => {
+      const execute = [
+        {
+          saleId: 1,
+          date: '2021-09-09T04:54:29.000Z',
+          product_id: 1,
+          quantity: 2
+        },
+        {
+          saleId: 2,
+          date: '2021-09-09T04:54:54.000Z',
+          product_id: 2,
+          quantity: 2
+        }
+      ];
+
+      sinon.stub(salesModel, 'getAll').resolves(execute);
+    });
+  
+    after(async () => {
+      salesModel.getAll.restore();
+    });
+
+    it('Retorna um array', async () => {
+      const response = await salesService.getAll();
+      expect(response).to.be.an('array');
+    });
+
+    it('O array possui objetos com as chaves id, name e quantity', async () => {
+      const [response] = await salesService.getAll();
+      expect(response).to.include.all.keys('saleId', 'date', 'product_id', 'quantity');
+    });
+  });
+});
